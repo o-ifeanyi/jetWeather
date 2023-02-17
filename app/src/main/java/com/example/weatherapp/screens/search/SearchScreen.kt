@@ -23,6 +23,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.weatherapp.navigation.WeatherScreens
+import com.example.weatherapp.widgets.InputField
 
 @OptIn(ExperimentalComposeUiApi::class)
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -49,7 +50,7 @@ fun SearchScreen(navController: NavController) {
         )
     }) {
         Column(modifier = Modifier.fillMaxSize()) {
-            InputField {
+            InputField(imeAction = ImeAction.Search) {
                 keyboard?.hide()
                 navController.navigate(WeatherScreens.HomeScreen.name + "/$it") {
                     popUpTo(WeatherScreens.HomeScreen.name) { inclusive = true }
@@ -59,28 +60,3 @@ fun SearchScreen(navController: NavController) {
     }
 }
 
-@Composable
-private fun InputField(onSubmit: (String) -> Unit) {
-    val input = remember {
-        mutableStateOf("")
-    }
-    val valid = remember(input.value) {
-        input.value.trim().isNotEmpty()
-    }
-    OutlinedTextField(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(20.dp),
-        enabled = true,
-        value = input.value, onValueChange = { input.value = it },
-        keyboardActions = KeyboardActions(
-            onSearch = {
-                if (!valid) return@KeyboardActions
-                onSubmit.invoke(input.value)
-                input.value = ""
-            }
-        ),
-        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
-        singleLine = true,
-    )
-}
